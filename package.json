@@ -1,0 +1,75 @@
+{
+  "name": "import-graph-uml",
+  "version": "0.0.0",
+  "description": "Display import graph of a code base in UML format",
+  "keywords": [
+    "uml",
+    "plantuml",
+    "import",
+    "dependency",
+    "graph"
+  ],
+  "main": "lib/import-graph-uml.js",
+  "types": "lib/import-graph-uml.d.ts",
+  "bin": {
+    "import-graph-uml": "./lib/cli.js"
+  },
+  "files": [
+    "lib"
+  ],
+  "author": "glebbash <glebbash@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/glebbash/import-graph-uml"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "lint": "eslint --fix 'src/**/*.ts'",
+    "prebuild": "rimraf dist",
+    "build": "tsc --project tsconfig.build.json",
+    "build:docs": "typedoc --out docs src/",
+    "test": "jest --config jest.config.ts --coverage",
+    "test:prod": "npm run lint && npm run test -- --no-cache"
+  },
+  "lint-staged": {
+    "{src,test}/**/*.ts": [
+      "eslint --fix"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "14.1.0",
+    "@commitlint/config-conventional": "14.1.0",
+    "@types/jest": "27.0.2",
+    "@types/node": "^16.11.7",
+    "@typescript-eslint/eslint-plugin": "^5.3.1",
+    "@typescript-eslint/parser": "^5.3.1",
+    "eslint": "^8.2.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "husky": "^7.0.4",
+    "jest": "27.3.1",
+    "jest-config": "27.3.1",
+    "lint-staged": "^11.2.6",
+    "prettier": "^2.4.1",
+    "rimraf": "^3.0.2",
+    "semantic-release": "^18.0.0",
+    "ts-jest": "^27.0.7",
+    "ts-node": "^10.4.0",
+    "typedoc": "^0.22.8",
+    "typescript": "^4.4.4"
+  },
+  "dependencies": {
+    "@typescript-eslint/typescript-estree": "^5.9.1",
+    "fast-glob": "^3.2.10",
+    "yargs": "^17.3.1"
+  }
+}

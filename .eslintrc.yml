@@ -1,0 +1,15 @@
+parser: '@typescript-eslint/parser'
+extends:
+  - plugin:@typescript-eslint/recommended
+  - prettier
+
+plugins:
+  - simple-import-sort
+
+parserOptions:
+  ecmaVersion: 2018
+  sourceType: module
+
+rules:
+  simple-import-sort/imports: error
+  simple-import-sort/exports: error
