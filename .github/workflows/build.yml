@@ -1,5 +1,5 @@
 name: build
-on: ["push", "pull_request"]
+on: ['push', 'pull_request']
 
 jobs:
   test:
@@ -45,6 +45,7 @@ jobs:
           npm ci
           npm run build
           npm run build:docs
+          apt install graphviz -y
 
       - name: Publish docs
         uses: peaceiris/actions-gh-pages@v3
