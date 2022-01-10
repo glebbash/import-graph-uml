@@ -5,46 +5,51 @@ import {
   Statement,
 } from '@typescript-eslint/types/dist/ast-spec';
 import { parse } from '@typescript-eslint/typescript-estree';
-import glob from 'fast-glob';
-import fs from 'fs';
-import path from 'path';
 
-interface Options {
+import { SourceFile } from './get-source-files';
+
+type FileContent = { path: string; content: string };
+
+export type FindImportsOptions = {
+  packageImports?: false;
+  absoluteImports?: true;
+  relativeImports?: true;
+};
+
+type FindImportsOptionsFull = {
   packageImports: boolean;
   absoluteImports: boolean;
   relativeImports: boolean;
-  ignore: string[];
-  root: string;
-}
+};
 
-const defaultOptions: Options = {
+const findImportsOptionsDefaults: FindImportsOptionsFull = {
   packageImports: true,
   absoluteImports: false,
   relativeImports: false,
-  ignore: [],
-  root: '~',
 };
 
 export async function findImports(
-  patterns: string | string[] = [],
-  options: Partial<Options> = defaultOptions,
+  files: SourceFile[],
+  options: FindImportsOptions = {},
 ) {
-  const _options = { ...defaultOptions, ...options };
+  const optionsFull = {
+    ...findImportsOptionsDefaults,
+    ...options,
+  };
 
-  const filePaths = await glob(patterns, {
-    cwd: path.resolve(_options.root),
-    ignore: _options.ignore,
-    absolute: false,
-    onlyFiles: true,
-  });
+  const fileContents = await Promise.all(
+    files.map(async (file) => ({
+      path: file.path,
+      content: await file.read(),
+    })),
+  );
 
-  const importedModules = filePaths.reduce(
-    (modules, modulePath) => ({
+  const importedModules = fileContents.reduce(
+    (modules, file) => ({
       ...modules,
-      [modulePath]: getImportedModulesFromModule(
-        modulePath,
-        _options.root,
-      ).filter((mod) => shouldImportBeCounted(mod, _options)),
+      [file.path]: getImportedModulesFromModule(file).filter((mod) =>
+        shouldImportBeCounted(mod, optionsFull),
+      ),
     }),
     {} as Record<string, string[]>,
   );
@@ -52,16 +57,13 @@ export async function findImports(
   return importedModules;
 }
 
-function getImportedModulesFromModule(modulePath: string, root: string) {
+function getImportedModulesFromModule(file: FileContent) {
   try {
-    const tree = parse(
-      fs.readFileSync(path.resolve(root, modulePath), { encoding: 'utf-8' }),
-    );
+    const tree = parse(file.content);
 
     return tree.body.map((node) => getImportedModulesInStatement(node)).flat();
   } catch (e) {
-    console.error('Error in `' + modulePath + '`: ' + e);
-    return [];
+    throw new Error(`Error loading '${file.path}': ${e}`);
   }
 }
 
@@ -105,7 +107,7 @@ function getImportedModulesInExpr(expr: BaseNode): string[] {
   return expr.arguments.map(getImportedModulesInExpr).flat();
 }
 
-function shouldImportBeCounted(value: string, options: Options) {
+function shouldImportBeCounted(value: string, options: FindImportsOptionsFull) {
   return (
     (value[0] === '/' && options.absoluteImports) ||
     (value[0] === '.' && options.relativeImports) ||

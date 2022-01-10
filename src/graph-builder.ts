@@ -1,7 +1,7 @@
 export type Node = { id: string; name: string };
 export type Link = [Node, Node];
 
-export class DiagramBuilder {
+export class GraphBuilder {
   private str = '';
   private nodes = this.buildAllNodes();
   private links = this.buildAllLinks();
@@ -13,7 +13,7 @@ export class DiagramBuilder {
     this.append(`class "${node.name}" as ${node.id}`);
   }
 
-  appendLink(node1: Node, node2: Node) {
+  appendLink([node1, node2]: Link) {
     this.append(`${node1.id} --> ${node2.id}`);
   }
 
@@ -50,7 +50,7 @@ export class DiagramBuilder {
 
   private buildAllNodes(): Node[] {
     const allNames = Object.entries(this.imports)
-      .map(([k, vs]) => [k, ...vs])
+      .map(([k, vs]) => [k, ...vs.filter((v) => !v.startsWith('~'))])
       .flat();
     const uniqueNames = [...new Set(allNames)];
 
