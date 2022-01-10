@@ -13,6 +13,9 @@ jobs:
         with:
           node-version: 14
 
+      - name: Install dependencies
+        run: sudo apt install graphviz -y
+
       - name: Test and generate coverage
         run: |
           npm ci
@@ -45,7 +48,6 @@ jobs:
           npm ci
           npm run build
           npm run build:docs
-          apt install graphviz -y
 
       - name: Publish docs
         uses: peaceiris/actions-gh-pages@v3
