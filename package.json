@@ -15,7 +15,8 @@
     "import-graph-uml": "./lib/cli.js"
   },
   "files": [
-    "lib"
+    "lib",
+    "assets"
   ],
   "author": "glebbash <glebbash@gmail.com>",
   "repository": {
