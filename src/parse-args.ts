@@ -1,12 +1,13 @@
+import { resolve } from 'path';
 import yargs from 'yargs';
 
 const argsParser = yargs([])
   .options({
     src: { type: 'string', demandOption: true },
     out: { type: 'string', default: 'out.puml' },
-    plantUmlJar: { type: 'string', default: 'plantuml-1.2021.16.jar' },
+    plantUmlJar: { type: 'string', default: resolve(__dirname, '../plantuml-1.2021.16.jar') },
     include: { type: 'string', default: 'src/**/*.ts' },
-    builder: { type: 'string', default: './build-module-graph' },
+    builder: { type: 'string', default: resolve(__dirname, './build-module-graph') },
   })
   .help();
 
